@@ -7,7 +7,7 @@ const char* ssid = "SmartFactory";               // WIFI ID
 const char* password = "inha4885";               // WIFI PW
 
 OLED_U8G2 oled;   // create OLED object
-WebServer server(80);               // create WebServer object, port 
+WebServer server(80);   // create WebServer object, port 
 
 int temp_sensor = A2;    // temperature sensor
 int Vo;
@@ -51,7 +51,9 @@ void loop(void) {
 }
 
 void handleRootEvent() {           // function to access through root                   
-  Serial.println("main page");     // info to access page with serial      
+  Serial.println("main page from ");     // info to access page with serial      
+
+  String clientIP = server.client().remoteIP().toString(); // client's IP address 
 
   Vo = analogRead(temp_sensor);         // read from temperature sensing value
   R2 = R1 * (4095.0 / (float)Vo - 1.0);
@@ -60,10 +62,18 @@ void handleRootEvent() {           // function to access through root
   Tc = T - 273.15;  //celsius temperature
   Tf = (Tc * 9.0/5.0) + 32.0;
 
-  String message = "welcome inha smartfactory webserver\n\n";
-  message = message + "Temperature: " + String(Tc) + "C, " + String(Tf) + "F";      
+  String message = "It's inha smartfactory webserver\n\n";
+  message = message +  "Your IP address: " + clientIP;
+  message = message + "\nTemperature: " + String(Tc) + "C, " + String(Tf) + "F";      
   server.send(200, "text/plain", message); // status code 200(ok) , format, message
-  Serial.println(message); // monitoring
+
+  Serial.println(clientIP);
+  Serial.print("섭씨온도: ")
+  Serial.print(Tc);
+  Serial.print("C,  "); 
+  Serial.print("화씨온도: ")
+  Serial.print(Tf);
+  Serial.println("F");
 }
 
 
