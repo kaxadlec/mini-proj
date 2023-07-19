@@ -54,6 +54,7 @@ void handleRootEvent() {           // function to access through root
   Serial.println("main page from ");     // info to access page with serial      
 
   String clientIP = server.client().remoteIP().toString(); // client's IP address 
+  String maskedIP = maskIPAddress(clientIP);
 
   Vo = analogRead(temp_sensor);         // read from temperature sensing value
   R2 = R1 * (4095.0 / (float)Vo - 1.0);
@@ -63,17 +64,31 @@ void handleRootEvent() {           // function to access through root
   Tf = (Tc * 9.0/5.0) + 32.0;
 
   String message = "It's inha smartfactory webserver\n\n";
-  message = message +  "Your IP address: " + clientIP;
+  message = message +  "Your IP address: " + maskedIP;
   message = message + "\nTemperature: " + String(Tc) + "C, " + String(Tf) + "F";      
   server.send(200, "text/plain", message); // status code 200(ok) , format, message
 
   Serial.println(clientIP);
-  Serial.print("섭씨온도: ")
+  Serial.print("섭씨온도: ");
   Serial.print(Tc);
   Serial.print("C,  "); 
-  Serial.print("화씨온도: ")
+  Serial.print("화씨온도: ");
   Serial.print(Tf);
   Serial.println("F");
+}
+
+String maskIPAddress(String ip_address) {
+  String masked_ip;
+  
+  // IP 주소의 중간 부분 가리기
+  int first_dot = ip_address.indexOf('.');
+  int second_dot = ip_address.indexOf('.', first_dot + 1);
+  
+  masked_ip += ip_address.substring(0, first_dot + 1);
+  masked_ip += "***";
+  masked_ip += ip_address.substring(second_dot);
+  
+  return masked_ip;
 }
 
 
