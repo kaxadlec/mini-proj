@@ -8,11 +8,6 @@ const char* password = "inha4885";               // WIFI PW
 // create WebServer object, port
 WebServer server(80);                
 
-void handleRootEvent() {           // function to access through root                   
-  Serial.println("main page");     // info to access page with serial            
-  server.send(200, "text/plain", "It's SmartFactory WEBSERVER"); // status code 200(ok) , format, message
-}
-
 
 void setup(void) {
   Serial.begin(115200);   // ESP32 baud rate 
@@ -41,5 +36,12 @@ void loop(void) {
   server.handleClient();   // clients process
   delay(2);
 }
+
+void handleRootEvent() {           // function to access through root                   
+  Serial.println("main page");     // info to access page with serial            
+  server.send(200, "text/plain", "It's SmartFactory WEBSERVER"); // status code 200(ok) , format, message
+}
+
+
 
 
