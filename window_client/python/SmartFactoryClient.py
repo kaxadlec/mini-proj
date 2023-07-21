@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import requests
 import datetime
-import random
 
 
 def update_labels():
@@ -41,6 +40,12 @@ def update_labels():
 
 def toggle_details():
     global show_details
+    factory_status = factory_status_label.cget('text').split(': ')[1]
+
+    if factory_status == "Stopped":
+        messagebox.showwarning("Warning", "Factory is stopped. No details available.")
+        return
+
     show_details = not show_details
 
     if show_details:
@@ -48,7 +53,7 @@ def toggle_details():
     else:
         details_button.config(text="Check Condition")
 
-    update_label_visibility(factory_status_label.cget('text').split(': ')[1])
+    update_label_visibility(factory_status)
 
 
 def update_label_visibility(factory_status):
