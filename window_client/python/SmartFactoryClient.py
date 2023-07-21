@@ -30,6 +30,8 @@ def update_labels():
                     factory_status_label.config(text=f'Factory Status: {factory_status}',
                                                 fg=("green" if factory_status == "Running" else "red"))
 
+                    update_label_visibility(factory_status)
+
         else:
             messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
     except requests.exceptions.RequestException as e:
@@ -42,19 +44,27 @@ def toggle_details():
     show_details = not show_details
 
     if show_details:
-        ip_address_label.grid_remove()
-        temperature_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
-        photoresistor_label.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
-        count_label.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
         details_button.config(text="Hide Condition")
     else:
-        ip_address_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
+        details_button.config(text="Check Condition")
+
+    update_label_visibility(factory_status_label.cget('text').split(': ')[1])
+
+
+def update_label_visibility(factory_status):
+    if show_details:
+        if factory_status == "Running":
+            temperature_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
+            photoresistor_label.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
+            count_label.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
+        else:  # Factory Status: Stopped
+            temperature_label.grid_remove()
+            photoresistor_label.grid_remove()
+            count_label.grid_remove()
+    else:
         temperature_label.grid_remove()
         photoresistor_label.grid_remove()
         count_label.grid_remove()
-        details_button.config(text="Check Condition")
-
-    factory_status_label.grid(column=0, row=0, columnspan=3, pady=5, sticky='nsew')
 
 
 if __name__ == "__main__":
@@ -82,7 +92,6 @@ if __name__ == "__main__":
     photoresistor_label.config(font=label_font)
     count_label.config(font=label_font)
 
-    # Call update_labels function to display initial data
     update_labels()
 
     refresh_button = tk.Button(root, text="Refresh", command=update_labels, font=button_font)
