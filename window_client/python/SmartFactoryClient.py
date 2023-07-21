@@ -1,40 +1,52 @@
-import requests
 import tkinter as tk
+import requests
 
-# 백엔드
 def update_labels():
+    url_str = "http://192.168.15.110:80/"  # Update with your server's IP address
+    try:
+        response = requests.get(url_str)
+        if response.status_code == 200:
+            lines = response.text.split('\n')
+            for line in lines:
+                if "Temperature:" in line:
+                    temperature_label.config(text=line)
+                elif "Photoresistor Value:" in line:
+                    photoresistor_label.config(text=line)
+                elif "Object Count:" in line:
+                    count_label.config(text=line)
+                elif "Your IP address:" in line:
+                    ip_address_label.config(text=line)
+        else:
+            messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
+    except requests.exceptions.RequestException as e:
+        print(e)
+        messagebox.showerror("Exception", "Exception occurred: " + str(e))
 
-    web_server_url = "http://192.168.15.245:80"
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("HyeonJin Smart Factory")
+    root.geometry("500x200")
 
-    response = requests.get(web_server_url)
-    data = response.text
-    # print(data)
-    lines = data.split("\n")  # lines의 2번방에서 ':' 다음에 나온 아이피만 잘라서 쓰고싶음
-    # print(lines)
+    main_panel = tk.Frame(root)
+    main_panel.pack(fill=tk.BOTH, expand=True)
 
-    ip_address = ''
-    if len(lines) >= 4:
-        ip_address = lines[2].split(": ")[1]
-    # print(f"아이피 주소: {ip_address}")
-    # print(lines[3])
+    ip_address_label = tk.Label(main_panel, text="IP Address: ")
+    temperature_label = tk.Label(main_panel, text="Temperature: ")
+    photoresistor_label = tk.Label(main_panel, text="Photoresistor Value: ")
+    count_label = tk.Label(main_panel, text="Object Count: ")
 
-    lbl_ip.config(text=f"아이피 주소: {ip_address}")
-    lbl_temperature.config(text=lines[3])
+    label_font = ("Arial", 20)  # Increase font size
+    ip_address_label.config(font=label_font)
+    temperature_label.config(font=label_font)
+    photoresistor_label.config(font=label_font)
+    count_label.config(font=label_font)
 
+    refresh_button = tk.Button(root, text="Check Condition", command=update_labels)
+    refresh_button.pack(side=tk.BOTTOM)
 
-# 프론트엔드 -> create gui component
-current_temperature_condition = tk.Tk()
-current_temperature_condition.title("Inha Smart Factory")
-current_temperature_condition.geometry("400x200")
-lbl_ip = tk.Label(current_temperature_condition, text="IP address: ")
-lbl_temperature = tk.Label(current_temperature_condition, text="")
-btn_check_temperature = tk.Button(current_temperature_condition, text="Check Temperature!", command=update_labels)
+    ip_address_label.pack()
+    temperature_label.pack()
+    photoresistor_label.pack()
+    count_label.pack()
 
-# layout
-lbl_ip.grid(row=0, column=0)
-lbl_temperature.grid(row=0, column=1)
-btn_check_temperature.grid(row=1, column=0, columnspan=2, sticky=tk.EW)
-current_temperature_condition.mainloop()
-
-
-
+    root.mainloop()
