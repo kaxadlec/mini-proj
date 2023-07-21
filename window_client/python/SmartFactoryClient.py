@@ -37,6 +37,8 @@ def update_labels():
         print(e)
         messagebox.showerror("Exception", "Exception occurred: " + str(e))
 
+    root.after(1000, update_labels)
+
 
 def toggle_details():
     global show_details
@@ -97,10 +99,7 @@ if __name__ == "__main__":
     photoresistor_label.config(font=label_font)
     count_label.config(font=label_font)
 
-    update_labels()
-
-    refresh_button = tk.Button(root, text="Refresh", command=update_labels, font=button_font)
-    refresh_button.pack(side=tk.BOTTOM)
+    root.after(1000, update_labels)
 
     details_button = tk.Button(root, text="Check Condition", command=toggle_details, font=button_font)
     details_button.pack(side=tk.BOTTOM)
