@@ -8,17 +8,14 @@ import random
 def update_labels():
     url_str = "http://192.168.0.75:80/"  # Update with your server's IP address
     try:
-        factory_status = random.choice(["Running", "Stopped"])
         current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        factory_status_label.config(text=f'Factory Status: {factory_status}',
-                                    fg=("green" if factory_status == "Running" else "red"))
         response = requests.get(url_str)
         if response.status_code == 200:
             lines = response.text.split('\n')
             for line in lines:
                 if "Temperature:" in line:
                     temp_value = line.split(': ')[1]
-                    temperature_label.config(text=f'Temperature: {temp_value}°C')
+                    temperature_label.config(text=f'Temperature: {temp_value}')
                 elif "Photoresistor Value:" in line:
                     photo_value = line.split(': ')[1]
                     photoresistor_label.config(text=f'Photoresistor Value: {photo_value}')
@@ -28,6 +25,10 @@ def update_labels():
                 elif "Your IP address:" in line:
                     ip_value = line.split(': ')[1]
                     ip_address_label.config(text=f'IP Address: {ip_value}\nCurrent Datetime: {current_datetime}')
+                elif "Factory Status:" in line:
+                    factory_status = line.split(': ')[1]
+                    factory_status_label.config(text=f'Factory Status: {factory_status}',
+                                                fg=("green" if factory_status == "Running" else "red"))
 
         else:
             messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
