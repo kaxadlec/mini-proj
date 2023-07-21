@@ -64,14 +64,17 @@ def update_label_visibility(factory_status):
             temperature_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
             photoresistor_label.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
             count_label.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
+            details_button.config(text="Hide Condition")
         else:  # Factory Status: Stopped
             temperature_label.grid_remove()
             photoresistor_label.grid_remove()
             count_label.grid_remove()
+            details_button.config(text="Check Condition")
     else:
         temperature_label.grid_remove()
         photoresistor_label.grid_remove()
         count_label.grid_remove()
+        details_button.config(text="Check Condition")
 
 
 if __name__ == "__main__":
