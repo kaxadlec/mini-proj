@@ -29,8 +29,10 @@ def update_labels():
                     factory_status = line.split(': ')[1]
                     factory_status_label.config(text=f'Factory Status: {factory_status}',
                                                 fg=("green" if factory_status == "Running" else "red"))
-
                     update_label_visibility(factory_status)
+                elif "Factory Operating Time: " in line:
+                    operating_time = line.split(': ')[1]
+                    operating_time_label.config(text=f'Factory Operating Time: {operating_time}')
 
         else:
             messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
@@ -147,16 +149,19 @@ if __name__ == "__main__":
     show_details = False
 
     factory_status_label = tk.Label(main_panel, text="Factory Status")
+    operating_time_label = tk.Label(main_panel, text="Factory Operating Time")
     ip_address_label = tk.Label(main_panel, text="IP Address")
     temperature_label = tk.Label(main_panel, text="")
     photoresistor_label = tk.Label(main_panel, text="")
     count_label = tk.Label(main_panel, text="")
+
 
     label_font = ("Arial", 20)
     label_font_small = ("Arial", 14)
     button_font = ("Arial", 16)
 
     factory_status_label.config(font=label_font)
+    operating_time_label.config(font=label_font_small)
     ip_address_label.config(font=label_font_small)
     temperature_label.config(font=label_font)
     photoresistor_label.config(font=label_font)
@@ -168,7 +173,8 @@ if __name__ == "__main__":
     details_button.pack(side=tk.BOTTOM)
 
     factory_status_label.grid(column=0, row=0, columnspan=3, pady=5, sticky='nsew')
-    ip_address_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
+    operating_time_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
+    ip_address_label.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
 
     main_panel.grid_rowconfigure(2, weight=1)
     main_panel.grid_columnconfigure(0, weight=1)
