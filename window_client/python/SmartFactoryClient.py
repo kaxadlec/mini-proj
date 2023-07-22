@@ -113,9 +113,9 @@ def toggle_details():
     show_details = not show_details
 
     if show_details:
-        details_button.config(text="Hide Condition")
+        details_button.config(text="Back")
     else:
-        details_button.config(text="Check Condition")
+        details_button.config(text="Check Factory Interior Condition")
 
     update_label_visibility(factory_status)
 
@@ -163,9 +163,9 @@ if __name__ == "__main__":
     factory_status_label.config(font=label_font)
     operating_time_label.config(font=label_font_small)
     ip_address_label.config(font=label_font_small)
-    temperature_label.config(font=label_font)
-    photoresistor_label.config(font=label_font)
-    count_label.config(font=label_font)
+    temperature_label.config(font=label_font_small)
+    photoresistor_label.config(font=label_font_small)
+    count_label.config(font=label_font_small)
 
     root.after(1000, update_labels)
 
