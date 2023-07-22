@@ -5,6 +5,46 @@ from datetime import datetime, timedelta
 import json
 
 
+def update_labels():
+    url_str = "http://192.168.15.110:80/"  # Update with your server's IP address
+    try:
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        response = requests.get(url_str)
+        if response.status_code == 200:
+            lines = response.text.split('\n')
+            for line in lines:
+                if "Temperature:" in line:
+                    temp_value = line.split(': ')[1]
+                    temperature_label.config(text=f'Internal factory temperature: {temp_value}')
+                elif "Photoresistor Value:" in line:
+                    photo_value = line.split(': ')[1]
+                    photoresistor_label.config(text=f'Photoresistor Value: {photo_value}')
+                elif "Object Count:" in line:
+                    count_value = line.split(': ')[1]
+                    count_label.config(text=f'Object Count: {count_value}')
+                elif "Your IP address:" in line:
+                    ip_value = line.split(': ')[1]
+                    ip_address_label.config(text=f'IP Address: {ip_value}\nCurrent Datetime: {current_datetime}')
+                elif "Factory Status:" in line:
+                    factory_status = line.split(': ')[1]
+                    factory_status_label.config(text=f'Factory Status: {factory_status}',
+                                                fg=("green" if factory_status == "Running" else "red"))
+
+                    update_label_visibility(factory_status)
+
+        else:
+            messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
+    except requests.exceptions.RequestException as e:
+        print(e)
+        messagebox.showerror("Exception", "Exception occurred: " + str(e))
+
+    current_weather, current_humidity = get_weather_and_humidity()
+    ip_address_label.config(
+        text=f"IP Address: {ip_value}\nCurrent Datetime: {current_datetime}\n{current_weather}\n{current_humidity}")
+
+    root.after(1000, update_labels)
+
+
 def get_weather_info(nx, ny):
     url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'
     key = 'uKP0jRZGJnko8jBZliAO46iz2KbH7VvtJT74/2U5M/N2AsBjnoSS8xp36tTrVXXo4hIUQxhtMBnvXn3fBWYjlg=='
@@ -60,46 +100,6 @@ def get_weather_and_humidity():
     return current_weather, current_humidity
 
 
-def update_labels():
-    url_str = "http://192.168.15.110:80/"  # Update with your server's IP address
-    try:
-        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        response = requests.get(url_str)
-        if response.status_code == 200:
-            lines = response.text.split('\n')
-            for line in lines:
-                if "Temperature:" in line:
-                    temp_value = line.split(': ')[1]
-                    temperature_label.config(text=f'Internal factory temperature: {temp_value}')
-                elif "Photoresistor Value:" in line:
-                    photo_value = line.split(': ')[1]
-                    photoresistor_label.config(text=f'Photoresistor Value: {photo_value}')
-                elif "Object Count:" in line:
-                    count_value = line.split(': ')[1]
-                    count_label.config(text=f'Object Count: {count_value}')
-                elif "Your IP address:" in line:
-                    ip_value = line.split(': ')[1]
-                    ip_address_label.config(text=f'IP Address: {ip_value}\nCurrent Datetime: {current_datetime}')
-                elif "Factory Status:" in line:
-                    factory_status = line.split(': ')[1]
-                    factory_status_label.config(text=f'Factory Status: {factory_status}',
-                                                fg=("green" if factory_status == "Running" else "red"))
-
-                    update_label_visibility(factory_status)
-
-        else:
-            messagebox.showerror("Error", "HTTP connection failed: " + str(response.status_code))
-    except requests.exceptions.RequestException as e:
-        print(e)
-        messagebox.showerror("Exception", "Exception occurred: " + str(e))
-
-    current_weather, current_humidity = get_weather_and_humidity()
-    ip_address_label.config(
-        text=f"IP Address: {ip_value}\nCurrent Datetime: {current_datetime}\n{current_weather}\n{current_humidity}")
-
-    root.after(5000, update_labels)
-
-
 def toggle_details():
     global show_details
     factory_status = factory_status_label.cget('text').split(': ')[1]
@@ -124,17 +124,17 @@ def update_label_visibility(factory_status):
             temperature_label.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
             photoresistor_label.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
             count_label.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
-            details_button.config(text="Hide Condition")
+            details_button.config(text="Back")
         else:  # Factory Status: Stopped
             temperature_label.grid_remove()
             photoresistor_label.grid_remove()
             count_label.grid_remove()
-            details_button.config(text="Check Condition")
+            details_button.config(text="Check Factory Interior Condition")
     else:
         temperature_label.grid_remove()
         photoresistor_label.grid_remove()
         count_label.grid_remove()
-        details_button.config(text="Check Condition")
+        details_button.config(text="Check Factory Interior Condition")
 
 
 if __name__ == "__main__":
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     root.after(1000, update_labels)
 
-    details_button = tk.Button(root, text="Check Condition", command=toggle_details, font=button_font)
+    details_button = tk.Button(root, text="Check Factory Interior Condition", command=toggle_details, font=button_font)
     details_button.pack(side=tk.BOTTOM)
 
     factory_status_label.grid(column=0, row=0, columnspan=3, pady=5, sticky='nsew')
