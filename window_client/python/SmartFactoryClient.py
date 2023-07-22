@@ -155,7 +155,6 @@ if __name__ == "__main__":
     photoresistor_label = tk.Label(main_panel, text="")
     count_label = tk.Label(main_panel, text="")
 
-
     label_font = ("Arial", 20)
     label_font_small = ("Arial", 14)
     button_font = ("Arial", 16)
