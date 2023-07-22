@@ -208,7 +208,7 @@ void handleRootEvent() {           // Function for handling root URL access
   message += "Factory Status: " + factory_status + "\n";
   message += "Your IP address: " + maskedIP + "\n";
   if (factory_status == "Running") {
-    message += "\nFactory Operating Time: " + String(hours) + ":" + String(minutes) + ":" + String(seconds);
+    message += "\nFactory Operating Time: " + formatTimeValue(hours) + ":" + formatTimeValue(minutes) + ":" + formatTimeValue(seconds);
     message += "\nTemperature: " + String(Tc) + " C / " + String(Tf) + " F";  
     message += "\nPhotoresistor Value: " + String(photo_sensor_value);
     message += "\nObject Count: " + String(count);
@@ -236,4 +236,12 @@ void calculateTimeUnits(uint32_t seconds, int *hours, int *minutes, int *seconds
     *hours = seconds / 3600;
     *minutes = (seconds % 3600) / 60;
     *seconds_remaining = seconds % 60;
+}
+
+String formatTimeValue(int timeValue) {
+  if (timeValue < 10) {
+    return "0" + String(timeValue);
+  } else {
+    return String(timeValue);
+  }
 }
