@@ -4,7 +4,7 @@
 #include <WebServer.h>
 
 const char* ssid = "SmartFactory";  // WIFI ID
-const char* password = "********";  // WIFI PW
+const char* password = "inha4885";  // WIFI PW
 
 OLED_U8G2 oled; // Create an OLED object
 WebServer server(80);  // Create a web server object
@@ -93,11 +93,7 @@ void loop() {
   end_time = start_time + MicrosSampleTime;
 
   controlFactoryStatus();
-
-  if (factory_status == "Running") {
-    running_time = (millis() - running_start) / 1000;
-    calculateTimeUnits(running_time, &hours, &minutes, &seconds);
-  }
+  updateRunningTime();
 
   controlLEDs(); // Call LED control function
   readPhotoResister(); // Call photoresistor measurement function
@@ -154,7 +150,6 @@ void updateCountAndDistance() { // Count objects recognized through the ultrason
 
 void resetButtonCheck() { // Reset button function (resetting the count variable here)
   if (digitalRead(red_button) == LOW) {
-    //Serial.println("count reset");
     count = 0;
   }
 }
@@ -207,9 +202,9 @@ void handleRootEvent() {           // Function for handling root URL access
   message += "---------------------------------\n";
   message += "Factory Status: " + factory_status + "\n";
   message += "Your IP address: " + maskedIP + "\n";
+  message += "Factory Operating Time: " + formatTimeValue(hours) + ":" + formatTimeValue(minutes) + ":" + formatTimeValue(seconds);
   if (factory_status == "Running") {
-    message += "\nFactory Operating Time: " + formatTimeValue(hours) + ":" + formatTimeValue(minutes) + ":" + formatTimeValue(seconds);
-    message += "\nTemperature: " + String(Tc) + " C / " + String(Tf) + " F";  
+    message += "\n\nTemperature: " + String(Tc) + " C / " + String(Tf) + " F";  
     message += "\nPhotoresistor Value: " + String(photo_sensor_value);
     message += "\nObject Count: " + String(count);
   }
@@ -244,4 +239,16 @@ String formatTimeValue(int timeValue) {
   } else {
     return String(timeValue);
   }
+}
+
+void updateRunningTime(){
+  if (factory_status == "Running") {
+    running_time = (millis() - running_start) / 1000;
+    calculateTimeUnits(running_time, &hours, &minutes, &seconds);
+  }
+  else if (factory_status == "Stopped") {
+    running_time = 0;
+    calculateTimeUnits(running_time, &hours, &minutes, &seconds);
+  }
+
 }
